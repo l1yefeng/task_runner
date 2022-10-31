@@ -1,39 +1,18 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"os"
 	"testing"
 )
 
-func Test(t *testing.T) {
-	in := `
-- name: Create root directory
-  type: create_dir
-  abortOnFail: true
-  args:
-    path: /tmp/project
-- name: Create VERSION file
-  type: create_file
-  args:
-    path: /tmp/project/VERSION
-- name: Set VERSION
-  type: put_content
-  args:
-    path: /tmp/project/VERSION
-    content: 1.0.0
-    append: false # overwrite the file
-# Here we could do other operations, but we don't have Type
-# for them, so we do nothing.
-- name: Clean up
-  type: rm_dir
-  abortOnFail: true
-  args:
-    path: /tmp/project
-    recursive: true
-`
+//go:embed sample.yml
+var sample string
 
-	tasks, err := parseTasks([]byte(in))
+func Test(t *testing.T) {
+
+	tasks, err := parseTasks([]byte(sample))
 	if err != nil {
 		t.Fatal(err)
 	}
