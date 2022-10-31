@@ -2,6 +2,8 @@ package main
 
 import (
 	"errors"
+	"io"
+	"log"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -134,4 +136,33 @@ func runTasks(tasks []Task, handle func(i int, err error)) (err error) {
 		}
 	}
 	return
+}
+
+func main() {
+	var input []byte
+	var err error
+	if len(os.Args) == 1 {
+		// take input from stdin
+		input, err = io.ReadAll(os.Stdin)
+	} else {
+		// take from file
+		input, err = os.ReadFile(os.Args[1])
+	}
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	tasks, err := parseTasks(input)
+	if err != nil {
+		log.Fatalf("when parsing tasks, %v", err)
+	}
+
+	err = runTasks(tasks, func(i int, e error) {
+		log.Printf("when running task %d, %v", i, e)
+	})
+
+	if err != nil {
+		os.Exit(1)
+	}
 }

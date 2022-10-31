@@ -1,13 +1,3 @@
-package main
-
-import (
-	"fmt"
-	"os"
-	"testing"
-)
-
-func Test(t *testing.T) {
-	in := `
 - name: Create root directory
   type: create_dir
   abortOnFail: true
@@ -31,25 +21,3 @@ func Test(t *testing.T) {
   args:
     path: /tmp/project
     recursive: true
-`
-
-	tasks, err := parseTasks([]byte(in))
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	os.RemoveAll("/tmp/project")
-
-	var buf string
-	err = runTasks(tasks, func(i int, err error) {
-		buf += fmt.Sprintf("ERR: task %d, %v\n", i, err)
-	})
-
-	if buf != "" {
-		t.Fatalf("buf is not empty: %s", buf)
-	}
-
-	if err != nil {
-		t.Fatal(err)
-	}
-}
